@@ -20,15 +20,17 @@
 #include	"cbase.h"
 #include	"monsters.h"
 #include	"schedule.h"
+#include	"talkmonster.h"
 
 // For holograms, make them not solid so the player can walk through them
 #define	SF_GENERICMONSTER_NOTSOLID					4 
+#define	SF_HEAD_CONTROLLER						8 
 
 //=========================================================
 // Monster's Anim Events Go Here
 //=========================================================
 
-class CGenericMonster : public CBaseMonster
+class CGenericMonster : public CTalkMonster
 {
 public:
 	void Spawn( void );
@@ -99,6 +101,10 @@ void CGenericMonster :: Spawn()
 
 	SET_MODEL( ENT(pev), STRING(pev->model) );
 
+	if ( pev->spawnflags & SF_HEAD_CONTROLLER ) {
+		m_afCapability = bits_CAP_TURN_HEAD;
+	}
+
 /*
 	if ( FStrEq( STRING(pev->model), "models/player.mdl" ) )
 		UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
@@ -132,6 +138,8 @@ void CGenericMonster :: Spawn()
 //=========================================================
 void CGenericMonster :: Precache()
 {
+	CTalkMonster::Precache();
+	TalkInit();
 	PRECACHE_MODEL( (char *)STRING(pev->model) );
 }	
 
