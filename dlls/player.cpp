@@ -3368,7 +3368,7 @@ void CBasePlayer :: FlashlightTurnOn( void )
 		return;
 	}
 
-	if ( (pev->weapons & (1<<WEAPON_SUIT)) )
+	if ( (pev->weapons & (1<<WEAPON_SUIT)) || (pev->weapons & (1<<WEAPON_FLASHLIGHT)) )
 	{
 		EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_ON, 1.0, ATTN_NORM, 0, PITCH_NORM );
 		SetBits(pev->effects, EF_DIMLIGHT);
@@ -3536,6 +3536,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 	case 101:
 		gEvilImpulse101 = TRUE;
 		GiveNamedItem( "item_suit" );
+		GiveNamedItem( "item_flashlight" );
 		GiveNamedItem( "item_battery" );
 		GiveNamedItem( "weapon_crowbar" );
 		GiveNamedItem( "weapon_9mmhandgun" );

@@ -340,3 +340,37 @@ class CItemLongJump : public CItem
 };
 
 LINK_ENTITY_TO_CLASS( item_longjump, CItemLongJump );
+
+class CItemFlashlight : public CItem
+{
+   void Spawn( void )
+   { 
+     Precache( );
+     SET_MODEL(ENT(pev), "models/w_flashlight.mdl");
+     CItem::Spawn( );
+   }
+
+   void Precache( void )
+   {
+     PRECACHE_MODEL ("models/w_flashlight.mdl");
+     PRECACHE_SOUND( "items/gunpickup2.wav" );
+   }
+
+   BOOL MyTouch( CBasePlayer *pPlayer )
+   {
+     if ( pPlayer->pev->weapons & (1<<WEAPON_FLASHLIGHT) )
+       return FALSE; 
+
+     pPlayer->pev->weapons |= (1<<WEAPON_FLASHLIGHT);
+
+     MESSAGE_BEGIN( MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev ); 
+     WRITE_STRING( STRING(pev->classname) ); 
+     MESSAGE_END(); 
+
+     EMIT_SOUND_SUIT( pPlayer->edict(), "items/gunpickup2.wav" ); 
+
+     return TRUE; 
+   }
+};
+
+LINK_ENTITY_TO_CLASS(item_flashlight, CItemFlashlight);
