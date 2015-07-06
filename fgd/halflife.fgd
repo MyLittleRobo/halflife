@@ -2334,7 +2334,12 @@
 	loadtime(string) : "Reload delay" : "0"
 ]
 
-@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = player_weaponstrip : "Strips player's weapons" []
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = player_weaponstrip : "Strips player's weapons" [
+    spawnflags(Flags) = 
+        [
+            1 : "Strip all (incl. suit)" 	: 0
+        ]
+    ]
 
 @PointClass base(Targetname, Targetx) size(-16 -16 0, 16 16 72) color(255 0 255) = scripted_sentence : "Scripted Sentence"
 [
