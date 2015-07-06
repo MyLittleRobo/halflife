@@ -1843,8 +1843,10 @@
 	spawnflags(Flags) = 
 	[
 		4 : "Not solid"	: 0
+        8 : "Head controller" : 0
 	]
 	model(studio) : "model"
+    skin(Integer) : "skin" : 0
 	body(Integer) : "Body" : 0
 ]
 @PointClass base(Monster, Sequence) size(-16 -16 0, 16 16 72) studio("models/gman.mdl") = monster_gman : "G-Man" []
