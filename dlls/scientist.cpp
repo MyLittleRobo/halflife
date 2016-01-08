@@ -1098,28 +1098,23 @@ int CScientist::FriendNumber( int arrayNumber )
 //=========================================================
 // Dead Scientist PROP
 //=========================================================
-class CDeadScientist : public CBaseMonster
+class CDeadScientist : public CDeadMonster
 {
 public:
 	void Spawn( void );
 	int	Classify ( void ) { return	CLASS_HUMAN_PASSIVE; }
 
-	void KeyValue( KeyValueData *pkvd );
+	const char* getPos(int pos) const;
 	int	m_iPose;// which sequence to display
 	static char *m_szPoses[7];
 };
 char *CDeadScientist::m_szPoses[] = { "lying_on_back", "lying_on_stomach", "dead_sitting", "dead_hang", "dead_table1", "dead_table2", "dead_table3" };
 
-void CDeadScientist::KeyValue( KeyValueData *pkvd )
+const char* CDeadScientist::getPos(int pos) const
 {
-	if (FStrEq(pkvd->szKeyName, "pose"))
-	{
-		m_iPose = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else
-		CBaseMonster::KeyValue( pkvd );
+	return m_szPoses[pos % (sizeof(m_szPoses)/sizeof(const char*))];
 }
+
 LINK_ENTITY_TO_CLASS( monster_scientist_dead, CDeadScientist );
 
 //
@@ -1127,15 +1122,7 @@ LINK_ENTITY_TO_CLASS( monster_scientist_dead, CDeadScientist );
 //
 void CDeadScientist :: Spawn( )
 {
-	PRECACHE_MODEL("models/scientist.mdl");
-	SET_MODEL(ENT(pev), "models/scientist.mdl");
-	
-	pev->effects		= 0;
-	pev->sequence		= 0;
-	// Corpses have less health
-	pev->health			= 8;//gSkillData.scientistHealth;
-	
-	m_bloodColor = BLOOD_COLOR_RED;
+	SpawnHelper("models/scientist.mdl", "Dead scientist with bad pose\n");
 
 	if ( pev->body == -1 )
 	{// -1 chooses a random head
@@ -1146,12 +1133,6 @@ void CDeadScientist :: Spawn( )
 		pev->skin = 1;
 	else
 		pev->skin = 0;
-
-	pev->sequence = LookupSequence( m_szPoses[m_iPose] );
-	if (pev->sequence == -1)
-	{
-		ALERT ( at_console, "Dead scientist with bad pose\n" );
-	}
 
 	//	pev->skin += 2; // use bloody skin -- UNDONE: Turn this back on when we have a bloody skin again!
 	MonsterInitDead();

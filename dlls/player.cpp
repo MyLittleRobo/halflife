@@ -4668,13 +4668,13 @@ BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon )
 //=========================================================
 // Dead HEV suit prop
 //=========================================================
-class CDeadHEV : public CBaseMonster
+class CDeadHEV : public CDeadMonster
 {
 public:
 	void Spawn( void );
 	int	Classify ( void ) { return	CLASS_HUMAN_MILITARY; }
 
-	void KeyValue( KeyValueData *pkvd );
+	const char* getPos(int pos) const;
 
 	int	m_iPose;// which sequence to display	-- temporary, don't need to save
 	static char *m_szPoses[4];
@@ -4682,15 +4682,9 @@ public:
 
 char *CDeadHEV::m_szPoses[] = { "deadback", "deadsitting", "deadstomach", "deadtable" };
 
-void CDeadHEV::KeyValue( KeyValueData *pkvd )
+const char* CDeadHEV::getPos(int pos) const
 {
-	if (FStrEq(pkvd->szKeyName, "pose"))
-	{
-		m_iPose = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else 
-		CBaseMonster::KeyValue( pkvd );
+	return m_szPoses[pos % (sizeof(m_szPoses)/sizeof(const char*))];
 }
 
 LINK_ENTITY_TO_CLASS( monster_hevsuit_dead, CDeadHEV );
@@ -4700,27 +4694,8 @@ LINK_ENTITY_TO_CLASS( monster_hevsuit_dead, CDeadHEV );
 //=========================================================
 void CDeadHEV :: Spawn( void )
 {
-	PRECACHE_MODEL("models/player.mdl");
-	SET_MODEL(ENT(pev), "models/player.mdl");
-
-	pev->effects		= 0;
-	pev->yaw_speed		= 8;
-	pev->sequence		= 0;
+	SpawnHelper("models/player.mdl", "Dead hevsuit with bad pose\n");
 	pev->body			= 1;
-	m_bloodColor		= BLOOD_COLOR_RED;
-
-	pev->sequence = LookupSequence( m_szPoses[m_iPose] );
-
-	if (pev->sequence == -1)
-	{
-		ALERT ( at_console, "Dead hevsuit with bad pose\n" );
-		pev->sequence = 0;
-		pev->effects = EF_BRIGHTFIELD;
-	}
-
-	// Corpses have less health
-	pev->health			= 8;
-
 	MonsterInitDead();
 }
 

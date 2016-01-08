@@ -2434,13 +2434,13 @@ void CHGruntRepel::RepelUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 //=========================================================
 // DEAD HGRUNT PROP
 //=========================================================
-class CDeadHGrunt : public CBaseMonster
+class CDeadHGrunt : public CDeadMonster
 {
 public:
 	void Spawn( void );
 	int	Classify ( void ) { return	CLASS_HUMAN_MILITARY; }
 
-	void KeyValue( KeyValueData *pkvd );
+	const char* getPos(int pos) const;
 
 	int	m_iPose;// which sequence to display	-- temporary, don't need to save
 	static char *m_szPoses[3];
@@ -2448,15 +2448,9 @@ public:
 
 char *CDeadHGrunt::m_szPoses[] = { "deadstomach", "deadside", "deadsitting" };
 
-void CDeadHGrunt::KeyValue( KeyValueData *pkvd )
+const char* CDeadHGrunt::getPos(int pos) const
 {
-	if (FStrEq(pkvd->szKeyName, "pose"))
-	{
-		m_iPose = atoi(pkvd->szValue);
-		pkvd->fHandled = TRUE;
-	}
-	else 
-		CBaseMonster::KeyValue( pkvd );
+	return m_szPoses[pos % (sizeof(m_szPoses)/sizeof(const char*))];
 }
 
 LINK_ENTITY_TO_CLASS( monster_hgrunt_dead, CDeadHGrunt );
@@ -2466,23 +2460,7 @@ LINK_ENTITY_TO_CLASS( monster_hgrunt_dead, CDeadHGrunt );
 //=========================================================
 void CDeadHGrunt :: Spawn( void )
 {
-	PRECACHE_MODEL("models/hgrunt.mdl");
-	SET_MODEL(ENT(pev), "models/hgrunt.mdl");
-
-	pev->effects		= 0;
-	pev->yaw_speed		= 8;
-	pev->sequence		= 0;
-	m_bloodColor		= BLOOD_COLOR_RED;
-
-	pev->sequence = LookupSequence( m_szPoses[m_iPose] );
-
-	if (pev->sequence == -1)
-	{
-		ALERT ( at_console, "Dead hgrunt with bad pose\n" );
-	}
-
-	// Corpses have less health
-	pev->health			= 8;
+	SpawnHelper("models/hgrunt.mdl", "Dead hgrunt with bad pose\n");
 
 	// map old bodies onto new bodies
 	switch( pev->body )
