@@ -2441,8 +2441,6 @@ public:
 	int	Classify ( void ) { return	CLASS_HUMAN_MILITARY; }
 
 	const char* getPos(int pos) const;
-
-	int	m_iPose;// which sequence to display	-- temporary, don't need to save
 	static char *m_szPoses[3];
 };
 

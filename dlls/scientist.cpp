@@ -1105,7 +1105,6 @@ public:
 	int	Classify ( void ) { return	CLASS_HUMAN_PASSIVE; }
 
 	const char* getPos(int pos) const;
-	int	m_iPose;// which sequence to display
 	static char *m_szPoses[7];
 };
 char *CDeadScientist::m_szPoses[] = { "lying_on_back", "lying_on_stomach", "dead_sitting", "dead_hang", "dead_table1", "dead_table2", "dead_table3" };
