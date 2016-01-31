@@ -1820,6 +1820,43 @@
 		37 : "lying_on_stomach"
 	]
 ]
+
+@PointClass base(Monster,TalkMonster, Sequence) studio("models/otis.mdl") = monster_otis : "Otis"
+[
+	head(Choices) : "head" : -1 =
+	[
+		-1 : "Random"
+		0 : "Head with hair"
+		1 : "Bald Head"
+	]
+]
+
+@PointClass base(Targetname,Appearflags, Sequence) studio("models/otis.mdl") = monster_otis_dead : "Dead Otis" 
+[
+    head(Choices) : "head" : -1 =
+	[
+		-1 : "Random"
+		0 : "Head with hair"
+		1 : "Bald Head"
+	]
+    pose(Choices) : "Pose" : 0 =
+    [
+        0 : "On back"
+        1 : "On side"
+        2 : "On stomach"
+        3 : "Stuffed in Vent"
+        4 : "Dead Sitting"
+    ]
+    sequence(Choices) : "Animation Sequence (editor)" : 35 =
+	[
+		35 : "lying_on_back"
+		36 : "lying_on_side"
+		37 : "lying_on_stomach"
+        38 : "stuffed_in_vent"
+        39 : "dead_sitting"
+	]
+]
+
 @PointClass base(Monster, Sequence) size(-95 -95 0, 95 95 190) studio("models/big_mom.mdl") = monster_bigmomma : "Big Mamma" 
 [
 	netname(string) : "First node" : ""
