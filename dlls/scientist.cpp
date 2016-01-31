@@ -85,7 +85,7 @@ public:
 	float	CoverRadius( void ) { return 1200; }		// Need more room for cover because scientists want to get far away!
 	BOOL	DisregardEnemy( CBaseEntity *pEnemy ) { return !pEnemy->IsAlive() || (gpGlobals->time - m_fearTime) > 15; }
 
-	BOOL	CanHeal( void );
+	virtual BOOL	CanHeal( void );
 	void	Heal( void );
 	void	Scream( void );
 
@@ -106,6 +106,10 @@ public:
 	static	TYPEDESCRIPTION m_SaveData[];
 
 	CUSTOM_SCHEDULES;
+
+protected:
+	void SciSpawnHelper(const char* modelName, float health);
+	void PrecacheSounds();
 
 private:	
 	float m_painTime;
@@ -654,17 +658,15 @@ void CScientist :: HandleAnimEvent( MonsterEvent_t *pEvent )
 //=========================================================
 // Spawn
 //=========================================================
-void CScientist :: Spawn( void )
+void CScientist::SciSpawnHelper(const char* modelName, float health)
 {
-	Precache( );
-
-	SET_MODEL(ENT(pev), "models/scientist.mdl");
+	SET_MODEL(ENT(pev), modelName);
 	UTIL_SetSize(pev, VEC_HUMAN_HULL_MIN, VEC_HUMAN_HULL_MAX);
 
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_STEP;
 	m_bloodColor		= BLOOD_COLOR_RED;
-	pev->health			= gSkillData.scientistHealth;
+	pev->health			= health;
 	pev->view_ofs		= Vector ( 0, 0, 50 );// position of the eyes relative to monster's origin.
 	m_flFieldOfView		= VIEW_FIELD_WIDE; // NOTE: we need a wide field of view so scientists will notice player and say hello
 	m_MonsterState		= MONSTERSTATE_NONE;
@@ -673,14 +675,19 @@ void CScientist :: Spawn( void )
 
 	m_afCapability		= bits_CAP_HEAR | bits_CAP_TURN_HEAD | bits_CAP_OPEN_DOORS | bits_CAP_AUTO_DOORS | bits_CAP_USE;
 
-	// White hands
-	pev->skin = 0;
-
 	if ( pev->body == -1 )
 	{// -1 chooses a random head
 		pev->body = RANDOM_LONG(0, NUM_SCIENTIST_HEADS-1);// pick a head, any head
 	}
+}
 
+void CScientist :: Spawn( void )
+{
+	Precache( );
+	SciSpawnHelper("models/scientist.mdl", gSkillData.scientistHealth);
+
+	// White hands
+	pev->skin = 0;
 	// Luther is black, make his hands black
 	if ( pev->body == HEAD_LUTHER )
 		pev->skin = 1;
@@ -695,18 +702,23 @@ void CScientist :: Spawn( void )
 void CScientist :: Precache( void )
 {
 	PRECACHE_MODEL("models/scientist.mdl");
-	PRECACHE_SOUND("scientist/sci_pain1.wav");
-	PRECACHE_SOUND("scientist/sci_pain2.wav");
-	PRECACHE_SOUND("scientist/sci_pain3.wav");
-	PRECACHE_SOUND("scientist/sci_pain4.wav");
-	PRECACHE_SOUND("scientist/sci_pain5.wav");
+	PrecacheSounds();
 
 	// every new scientist must call this, otherwise
 	// when a level is loaded, nobody will talk (time is reset to 0)
 	TalkInit();
 
 	CTalkMonster::Precache();
-}	
+}
+
+void CScientist::PrecacheSounds()
+{
+	PRECACHE_SOUND("scientist/sci_pain1.wav");
+	PRECACHE_SOUND("scientist/sci_pain2.wav");
+	PRECACHE_SOUND("scientist/sci_pain3.wav");
+	PRECACHE_SOUND("scientist/sci_pain4.wav");
+	PRECACHE_SOUND("scientist/sci_pain5.wav");
+}
 
 // Init talk data
 void CScientist :: TalkInit()
@@ -717,8 +729,10 @@ void CScientist :: TalkInit()
 	// scientist will try to talk to friends in this order:
 
 	m_szFriends[0] = "monster_scientist";
+	m_szFriends[0] = "monster_cleansuit_scientist";
 	m_szFriends[1] = "monster_sitting_scientist";
-	m_szFriends[2] = "monster_barney";
+	m_szFriends[1] = "monster_sitting_cleansuit_scientist";
+	m_szFriends[4] = "monster_barney";
 
 	// scientists speach group names (group names are in sentences.txt)
 
@@ -1161,6 +1175,9 @@ public:
 	int		m_baseSequence;	
 	int		m_headTurn;
 	float	m_flResponseDelay;
+
+protected:
+	void SciSpawnHelper(const char* modelName);
 };
 
 LINK_ENTITY_TO_CLASS( monster_sitting_scientist, CSittingScientist );
@@ -1187,10 +1204,10 @@ SITTING_ANIM_sitting3
 //
 // ********** Scientist SPAWN **********
 //
-void CSittingScientist :: Spawn( )
+void CSittingScientist::SciSpawnHelper(const char* modelName)
 {
-	PRECACHE_MODEL("models/scientist.mdl");
-	SET_MODEL(ENT(pev), "models/scientist.mdl");
+	PRECACHE_MODEL((char*)modelName);
+	SET_MODEL(ENT(pev), modelName);
 	Precache();
 	InitBoneControllers();
 
@@ -1212,9 +1229,6 @@ void CSittingScientist :: Spawn( )
 	{// -1 chooses a random head
 		pev->body = RANDOM_LONG(0, NUM_SCIENTIST_HEADS-1);// pick a head, any head
 	}
-	// Luther is black, make his hands black
-	if ( pev->body == HEAD_LUTHER )
-		pev->skin = 1;
 	
 	m_baseSequence = LookupSequence( "sitlookleft" );
 	pev->sequence = m_baseSequence + RANDOM_LONG(0,4);
@@ -1224,6 +1238,14 @@ void CSittingScientist :: Spawn( )
 	pev->nextthink = gpGlobals->time + 0.1;
 
 	DROP_TO_FLOOR ( ENT(pev) );
+}
+
+void CSittingScientist :: Spawn( )
+{
+	SciSpawnHelper("models/scientist.mdl");
+	// Luther is black, make his hands black
+	if ( pev->body == HEAD_LUTHER )
+		pev->skin = 1;
 }
 
 void CSittingScientist :: Precache( void )
@@ -1406,3 +1428,74 @@ int CSittingScientist :: FIdleSpeak ( void )
 	CTalkMonster::g_talkWaitTime = 0;
 	return FALSE;
 }
+
+class CCleansuitScientist : public CScientist
+{
+public:
+	void Spawn();
+	void Precache();
+	BOOL CanHeal();
+};
+
+LINK_ENTITY_TO_CLASS( monster_cleansuit_scientist, CCleansuitScientist )
+
+void CCleansuitScientist::Spawn()
+{
+	Precache( );
+	SciSpawnHelper("models/cleansuit_scientist.mdl", gSkillData.cleansuitScientistHealth);
+	MonsterInit();
+	SetUse( &CScientist::FollowerUse );
+}
+
+void CCleansuitScientist::Precache()
+{
+	PRECACHE_MODEL("models/cleansuit_scientist.mdl");
+	PrecacheSounds();
+	TalkInit();
+	CTalkMonster::Precache();
+}
+
+BOOL CCleansuitScientist::CanHeal()
+{
+	return FALSE;
+}
+
+class CDeadCleansuitScientist : public CDeadMonster
+{
+public:
+	void Spawn( void );
+	int	Classify ( void ) { return	CLASS_HUMAN_PASSIVE; }
+
+	const char* getPos(int pos) const;
+	static char *m_szPoses[7];
+};
+char *CDeadCleansuitScientist::m_szPoses[] = { "lying_on_back", "lying_on_stomach", "dead_sitting", "dead_hang", "dead_table1", "dead_table2", "dead_table3" };
+
+const char* CDeadCleansuitScientist::getPos(int pos) const
+{
+	return m_szPoses[pos % (sizeof(m_szPoses)/sizeof(const char*))];
+}
+
+LINK_ENTITY_TO_CLASS( monster_cleansuit_scientist_dead, CDeadCleansuitScientist );
+
+void CDeadCleansuitScientist :: Spawn( )
+{
+	SpawnHelper("models/cleansuit_scientist.mdl", "Dead cleansuit scientist with bad pose\n");
+	if ( pev->body == -1 ) {
+		pev->body = RANDOM_LONG(0, NUM_SCIENTIST_HEADS-1);
+	}
+	MonsterInitDead();
+}
+
+class CSittingCleansuitScientist : public CSittingScientist
+{
+public:
+	void Spawn();
+};
+
+void CSittingCleansuitScientist::Spawn()
+{
+	SciSpawnHelper("models/cleansuit_scientist.mdl");
+}
+
+LINK_ENTITY_TO_CLASS( monster_sitting_cleansuit_scientist, CSittingCleansuitScientist );
