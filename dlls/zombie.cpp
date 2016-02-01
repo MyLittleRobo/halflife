@@ -410,3 +410,29 @@ void CZombieSoldier :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			break;
 	}
 }
+
+class CDeadZombieSoldier : public CDeadMonster
+{
+public:
+	void Spawn( void );
+	int	Classify ( void ) { return	CLASS_ALIEN_MONSTER; }
+
+	const char* getPos(int pos) const;
+	static char *m_szPoses[2];
+};
+
+char *CDeadZombieSoldier::m_szPoses[] = { "dead_on_back", "dead_on_stomach" };
+
+const char* CDeadZombieSoldier::getPos(int pos) const
+{
+	return m_szPoses[pos % (sizeof(m_szPoses)/sizeof(const char*))];
+}
+
+LINK_ENTITY_TO_CLASS( monster_zombie_soldier_dead, CDeadZombieSoldier );
+
+void CDeadZombieSoldier :: Spawn( )
+{
+	SpawnHelper("models/zombie_soldier.mdl", "Dead zombie soldier with bad pose\n", BLOOD_COLOR_YELLOW);
+	MonsterInitDead();
+}
+
