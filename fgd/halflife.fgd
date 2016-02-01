@@ -1829,6 +1829,13 @@
 		0 : "Head with hair"
 		1 : "Bald Head"
 	]
+    bodystate(Choices) : "bodystate" : -1 =
+	[
+		-1 : "Random"
+		0 : "Gun Holstered"
+		1 : "Gun Drawn"
+		2 : "Donut"
+	]
 ]
 
 @PointClass base(Targetname,Appearflags, Sequence) studio("models/otis.mdl") = monster_otis_dead : "Dead Otis" 

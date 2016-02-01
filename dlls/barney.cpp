@@ -424,9 +424,6 @@ void CBarney::SpawnImpl(const char* modelName, float health)
 	m_flFieldOfView		= VIEW_FIELD_WIDE; // NOTE: we need a wide field of view so npc will notice player and say hello
 	m_MonsterState		= MONSTERSTATE_NONE;
 	
-	pev->body			= 0; // gun in holster
-	m_fGunDrawn			= FALSE;
-	
 	m_afCapability		= bits_CAP_HEAR | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP;
 }
 
@@ -434,6 +431,8 @@ void CBarney :: Spawn()
 {
 	Precache();
 	SpawnImpl("models/barney.mdl", gSkillData.otisHealth);
+	pev->body			= 0; // gun in holster
+	m_fGunDrawn			= FALSE;
 	MonsterInit();
 	SetUse( &CBarney :: FollowerUse );
 }
@@ -868,7 +867,9 @@ public:
 	void KeyValue( KeyValueData *pkvd );
 	void HandleAnimEvent( MonsterEvent_t *pEvent );
 	
+private:
 	int head;
+	int bodystate;
 };
 
 LINK_ENTITY_TO_CLASS( monster_otis, COtis );
@@ -881,6 +882,18 @@ void COtis :: Spawn()
 		SetBodygroup(2, RANDOM_LONG(0, 1));
 	else
 		SetBodygroup(2, head);
+
+	if (bodystate == -1) {
+		bodystate = RANDOM_LONG(0, 1); // don't include body with donut in random
+	}
+
+	SetBodygroup(1, bodystate);
+
+	m_fGunDrawn = FALSE;
+	if (bodystate == OTIS_BODY_GUNDRAWN) {
+		m_fGunDrawn = TRUE;	
+	}
+
 	MonsterInit();
 	SetUse( &COtis :: FollowerUse );
 }
@@ -960,6 +973,11 @@ void COtis::KeyValue( KeyValueData *pkvd )
 	if (FStrEq(pkvd->szKeyName, "head"))
 	{
 		head = atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "bodystate")) 
+	{
+		bodystate = atoi(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
