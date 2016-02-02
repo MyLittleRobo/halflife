@@ -771,7 +771,6 @@ void CScientist :: TalkInit()
 
 int CScientist :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
-
 	if ( pevInflictor && pevInflictor->flags & FL_CLIENT )
 	{
 		Remember( bits_MEMORY_PROVOKED );
@@ -1435,9 +1434,25 @@ public:
 	void Spawn();
 	void Precache();
 	BOOL CanHeal();
+	int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
+	void KeyValue( KeyValueData *pkvd );
+
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
+private:
+	int m_immunity;
 };
 
-LINK_ENTITY_TO_CLASS( monster_cleansuit_scientist, CCleansuitScientist )
+TYPEDESCRIPTION	CCleansuitScientist::m_SaveData[] = 
+{
+	DEFINE_FIELD( CCleansuitScientist, m_immunity, FIELD_INTEGER ),
+};
+
+IMPLEMENT_SAVERESTORE( CCleansuitScientist, CScientist );
+
+LINK_ENTITY_TO_CLASS( monster_cleansuit_scientist, CCleansuitScientist );
 
 void CCleansuitScientist::Spawn()
 {
@@ -1460,6 +1475,69 @@ BOOL CCleansuitScientist::CanHeal()
 	return FALSE;
 }
 
+static int NumberOfBits(unsigned x)
+{
+    x = x - ((x >> 1) & 0x55555555);
+    x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
+    x = (x + (x >> 4)) & 0x0F0F0F0F;
+    x = x + (x >> 8);
+    x = x + (x >> 16);
+    return x & 0x0000003F;
+}
+
+int CCleansuitScientist::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
+{
+	int damageBitsCount = NumberOfBits((unsigned)bitsDamageType);
+	int immuneBitsCount = NumberOfBits((unsigned)(m_immunity & bitsDamageType));
+	int resultBitsCount = damageBitsCount - immuneBitsCount;
+
+	if (damageBitsCount) {
+		flDamage *= (float)resultBitsCount/float(damageBitsCount);
+	}
+
+	if (flDamage) {
+		return CScientist::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
+	} else {
+		return 0;
+	}
+}
+
+static int ParseImmunity(const char* str)
+{
+	int immunity = 0;
+	while(*str != '\0') {
+		switch(*str) {
+			case 'B': immunity |= DMG_BURN; break;
+			case 'F': immunity |= DMG_FREEZE; break;
+			case 'H': immunity |= DMG_SHOCK; break;
+			case 'S': immunity |= DMG_SONIC; break;
+			case 'Z': immunity |= DMG_PARALYZE; break;
+			case 'N': immunity |= DMG_NERVEGAS; break;
+			case 'P': immunity |= DMG_POISON; break;
+			case 'R': immunity |= DMG_RADIATION; break;
+			case 'A': immunity |= DMG_ACID; break;
+			case 'b': immunity |= DMG_SLOWBURN; break;
+			case 'f': immunity |= DMG_SLOWFREEZE; break;
+			case 'E': immunity |= DMG_ENERGYBEAM; break;
+			default: break;
+		}
+		str++;
+	}
+	return immunity;
+}
+
+void CCleansuitScientist::KeyValue( KeyValueData *pkvd )
+{
+	if (FStrEq(pkvd->szKeyName, "immunity"))
+	{
+		m_immunity = ParseImmunity(pkvd->szValue);
+		
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CScientist::KeyValue( pkvd );
+}
+
 class CDeadCleansuitScientist : public CDeadMonster
 {
 public:
@@ -1467,9 +1545,9 @@ public:
 	int	Classify ( void ) { return	CLASS_HUMAN_PASSIVE; }
 
 	const char* getPos(int pos) const;
-	static char *m_szPoses[7];
+	static const char *m_szPoses[7];
 };
-char *CDeadCleansuitScientist::m_szPoses[] = { "lying_on_back", "lying_on_stomach", "dead_sitting", "dead_hang", "dead_table1", "dead_table2", "dead_table3" };
+const char *CDeadCleansuitScientist::m_szPoses[] = { "lying_on_back", "lying_on_stomach", "dead_sitting", "dead_hang", "dead_table1", "dead_table2", "dead_table3" };
 
 const char* CDeadCleansuitScientist::getPos(int pos) const
 {

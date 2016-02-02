@@ -2220,6 +2220,8 @@
         2 : "Luther"
         3 : "Slick"
     ]
+    
+    immunity(string) : "Immunity to damage types" : : "Multiple types can be specified. b = Burn. f = Freeze"
 ]
 
 @PointClass base(Targetname,Appearflags,RenderFields, Sequence) studio("models/cleansuit_scientist.mdl") = monster_cleansuit_scientist_dead : "Dead Cleansuit Scientist" 
