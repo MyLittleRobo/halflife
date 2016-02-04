@@ -238,7 +238,7 @@ void LinkUserMessages( void )
 
 }
 
-LINK_ENTITY_TO_CLASS( player, CBasePlayer );
+LINK_ENTITY_TO_CLASS( player, CBasePlayer )
 
 
 
@@ -2072,7 +2072,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 		return;
 
 	// only check for time based damage approx. every 2 seconds
-	if (abs(gpGlobals->time - m_tbdPrev) < 2.0)
+	if (fabs(gpGlobals->time - m_tbdPrev) < 2.0)
 		return;
 	
 	m_tbdPrev = gpGlobals->time;
@@ -4687,7 +4687,7 @@ const char* CDeadHEV::getPos(int pos) const
 	return m_szPoses[pos % (sizeof(m_szPoses)/sizeof(const char*))];
 }
 
-LINK_ENTITY_TO_CLASS( monster_hevsuit_dead, CDeadHEV );
+LINK_ENTITY_TO_CLASS( monster_hevsuit_dead, CDeadHEV )
 
 //=========================================================
 // ********** DeadHEV SPAWN **********
@@ -4708,7 +4708,7 @@ public:
 private:
 };
 
-LINK_ENTITY_TO_CLASS( player_weaponstrip, CStripWeapons );
+LINK_ENTITY_TO_CLASS( player_weaponstrip, CStripWeapons )
 
 void CStripWeapons :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
@@ -4755,7 +4755,7 @@ private:
 	float	m_loadTime;
 };
 
-LINK_ENTITY_TO_CLASS( player_loadsaved, CRevertSaved );
+LINK_ENTITY_TO_CLASS( player_loadsaved, CRevertSaved )
 
 TYPEDESCRIPTION	CRevertSaved::m_SaveData[] = 
 {
@@ -4763,7 +4763,7 @@ TYPEDESCRIPTION	CRevertSaved::m_SaveData[] =
 	DEFINE_FIELD( CRevertSaved, m_loadTime, FIELD_FLOAT ),
 };
 
-IMPLEMENT_SAVERESTORE( CRevertSaved, CPointEntity );
+IMPLEMENT_SAVERESTORE( CRevertSaved, CPointEntity )
 
 void CRevertSaved :: KeyValue( KeyValueData *pkvd )
 {
@@ -4856,5 +4856,5 @@ void CInfoIntermission::Think ( void )
 	}
 }
 
-LINK_ENTITY_TO_CLASS( info_intermission, CInfoIntermission );
+LINK_ENTITY_TO_CLASS( info_intermission, CInfoIntermission )
 
