@@ -435,7 +435,7 @@ TYPEDESCRIPTION	CBasePlayerItem::m_SaveData[] =
 	// DEFINE_FIELD( CBasePlayerItem, m_iIdPrimary, FIELD_INTEGER ),
 	// DEFINE_FIELD( CBasePlayerItem, m_iIdSecondary, FIELD_INTEGER ),
 };
-IMPLEMENT_SAVERESTORE( CBasePlayerItem, CBaseAnimating );
+IMPLEMENT_SAVERESTORE( CBasePlayerItem, CBaseAnimating )
 
 
 TYPEDESCRIPTION	CBasePlayerWeapon::m_SaveData[] = 
@@ -457,7 +457,7 @@ TYPEDESCRIPTION	CBasePlayerWeapon::m_SaveData[] =
 //  DEFINE_FIELD( CBasePlayerWeapon, m_iClientWeaponState, FIELD_INTEGER ), reset to zero on load so hud gets updated correctly
 };
 
-IMPLEMENT_SAVERESTORE( CBasePlayerWeapon, CBasePlayerItem );
+IMPLEMENT_SAVERESTORE( CBasePlayerWeapon, CBasePlayerItem )
 
 
 void CBasePlayerItem :: SetObjectCollisionBox( void )
@@ -1226,7 +1226,7 @@ float CBasePlayerWeapon::GetNextAttackDelay( float delay )
 // weaponbox code:
 //*********************************************************
 
-LINK_ENTITY_TO_CLASS( weaponbox, CWeaponBox );
+LINK_ENTITY_TO_CLASS( weaponbox, CWeaponBox )
 
 TYPEDESCRIPTION	CWeaponBox::m_SaveData[] = 
 {
@@ -1236,7 +1236,7 @@ TYPEDESCRIPTION	CWeaponBox::m_SaveData[] =
 	DEFINE_FIELD( CWeaponBox, m_cAmmoTypes, FIELD_INTEGER ),
 };
 
-IMPLEMENT_SAVERESTORE( CWeaponBox, CBaseEntity );
+IMPLEMENT_SAVERESTORE( CWeaponBox, CBaseEntity )
 
 //=========================================================
 //
@@ -1568,14 +1568,14 @@ TYPEDESCRIPTION	CRpg::m_SaveData[] =
 	DEFINE_FIELD( CRpg, m_fSpotActive, FIELD_INTEGER ),
 	DEFINE_FIELD( CRpg, m_cActiveRockets, FIELD_INTEGER ),
 };
-IMPLEMENT_SAVERESTORE( CRpg, CBasePlayerWeapon );
+IMPLEMENT_SAVERESTORE( CRpg, CBasePlayerWeapon )
 
 TYPEDESCRIPTION	CRpgRocket::m_SaveData[] = 
 {
 	DEFINE_FIELD( CRpgRocket, m_flIgniteTime, FIELD_TIME ),
 	DEFINE_FIELD( CRpgRocket, m_pLauncher, FIELD_CLASSPTR ),
 };
-IMPLEMENT_SAVERESTORE( CRpgRocket, CGrenade );
+IMPLEMENT_SAVERESTORE( CRpgRocket, CGrenade )
 
 TYPEDESCRIPTION	CShotgun::m_SaveData[] = 
 {
@@ -1585,7 +1585,7 @@ TYPEDESCRIPTION	CShotgun::m_SaveData[] =
 	// DEFINE_FIELD( CShotgun, m_iShell, FIELD_INTEGER ),
 	DEFINE_FIELD( CShotgun, m_flPumpTime, FIELD_TIME ),
 };
-IMPLEMENT_SAVERESTORE( CShotgun, CBasePlayerWeapon );
+IMPLEMENT_SAVERESTORE( CShotgun, CBasePlayerWeapon )
 
 TYPEDESCRIPTION	CGauss::m_SaveData[] = 
 {
@@ -1595,7 +1595,7 @@ TYPEDESCRIPTION	CGauss::m_SaveData[] =
 //	DEFINE_FIELD( CGauss, m_flNextAmmoBurn, FIELD_TIME ),
 	DEFINE_FIELD( CGauss, m_fPrimaryFire, FIELD_BOOLEAN ),
 };
-IMPLEMENT_SAVERESTORE( CGauss, CBasePlayerWeapon );
+IMPLEMENT_SAVERESTORE( CGauss, CBasePlayerWeapon )
 
 TYPEDESCRIPTION	CEgon::m_SaveData[] = 
 {
@@ -1608,7 +1608,7 @@ TYPEDESCRIPTION	CEgon::m_SaveData[] =
 	DEFINE_FIELD( CEgon, m_shakeTime, FIELD_TIME ),
 	DEFINE_FIELD( CEgon, m_flAmmoUseTime, FIELD_TIME ),
 };
-IMPLEMENT_SAVERESTORE( CEgon, CBasePlayerWeapon );
+IMPLEMENT_SAVERESTORE( CEgon, CBasePlayerWeapon )
 
 TYPEDESCRIPTION	CSatchel::m_SaveData[] = 
 {
